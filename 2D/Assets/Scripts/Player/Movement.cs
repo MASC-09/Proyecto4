@@ -15,6 +15,11 @@ public class Movement : MonoBehaviour
     public float fallMultiplier = 0.5f;
     public float lowJumpMultiplier = 1f;
     // Start is called before the first frame update
+
+    private bool canDoubleJump = false;
+    public float doubleJumpSpeed = 2.5f;
+
+
     void Start()
     {
         
@@ -40,23 +45,42 @@ public class Movement : MonoBehaviour
             rb.velocity = new Vector2(0, rb.velocity.y);
         }
 
+        if (Input.GetKey("space"))
+        {
+            //salto sencillo
+            if(CheckGround.isGrounded)
+            {
+                canDoubleJump = true;
+                rb.velocity = new Vector2(rb.velocity.x, jumpSpeed);
+            }
+            //double jump
+            else
+            {
+                if (Input.GetKeyDown("space") ) //when you press down  the key 
+                {
+                    if (canDoubleJump)
+                    {
+                        animator.SetBool("DoubleJump",true);
+                        rb.velocity = new Vector2(rb.velocity.x, doubleJumpSpeed);
+                        canDoubleJump = false;
+                    }
+                }
+            }
+        }
+
         if (betterJump)
         {
             if(rb.velocity.y < 0)
             {
                 rb.velocity += Vector2.up * Physics2D.gravity.y * fallMultiplier * Time.deltaTime;
             }
-            if(rb.velocity.y > 0 && !Input.GetKey("Space"))
+            if(rb.velocity.y > 0 && !Input.GetKey("space"))
             {
                 rb.velocity += Vector2.up * Physics2D.gravity.y * lowJumpMultiplier * Time.deltaTime;
             }
         }
 
 
-        if (Input.GetKey("space") && CheckGround.isGrounded)
-        {
-            rb.velocity = new Vector2(rb.velocity.x, jumpSpeed); 
-        }
         if (CheckGround.isGrounded == false)
         {
             animator.SetBool("Jump", true);
@@ -65,6 +89,18 @@ public class Movement : MonoBehaviour
         else if (CheckGround.isGrounded == true)
         {
             animator.SetBool("Jump", false);
+            animator.SetBool("DoubleJump", false);
+            animator.SetBool("Falling", false);
+
+            if(rb.velocity.y < 0) //if is less than 0 then it is falling
+            {
+                animator.SetBool("Falling", true);
+            }
+            else if (rb.velocity.y > 0) //it is rising
+            {
+                animator.SetBool("Falling", true);
+            }
+
             if (rb.velocity.x == 0)
             {
                 animator.SetBool("Run", false);
