@@ -51,3 +51,6 @@ TagManager:
   - name: Scene
     uniqueID: 3039177923
     locked: 0
+  - name: Transition
+    uniqueID: 1693947143
+    locked: 0
